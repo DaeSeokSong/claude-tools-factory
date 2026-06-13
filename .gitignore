@@ -3,6 +3,11 @@ node_modules/
 .pnp
 .pnp.*
 
+# Lockfiles — deps are pinned in each package.json; locks regenerate on install
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
 # Builds
 dist/
 build/
