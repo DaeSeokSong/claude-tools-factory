@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s' 'Experience-ledger discipline is active: before any non-trivial task, call research_task and cross-verify the brief; after acting (especially on failure), call record_experience with a one-line title, 5W1H, root cause, result, and resolution. This prevents repeating known failures. See the experience-guard skill.'"
+          }
+        ]
+      }
+    ]
+  }
+}

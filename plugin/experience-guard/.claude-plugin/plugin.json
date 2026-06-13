@@ -1,0 +1,9 @@
+{
+  "name": "experience-guard",
+  "description": "Enforces the experience-ledger discipline: research prior history before any non-trivial task, then record the outcome (especially failures) after — so the agent stops repeating known mistakes. Pairs with the experience-ledger MCP server.",
+  "version": "0.1.0",
+  "author": {
+    "name": "DaeSeokSong"
+  },
+  "keywords": ["agent-memory", "lessons-learned", "discipline", "experience-ledger"]
+}
