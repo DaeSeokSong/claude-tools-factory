@@ -71,7 +71,7 @@ export const REGISTRY: Benchmark[] = [
       },
     ],
     notes:
-      "There is NO official CIFAR-10 leaderboard. Compare protocols, not just numbers: SOTA claims differ on preprocessing, augmentation, and whether extra training data is used.",
+      "There is NO official CIFAR-10 leaderboard. Current SOTA is ~99.5%+ (top studies report ~99.9%). Compare protocols, not just numbers: SOTA claims differ on preprocessing, augmentation, and whether extra training data is used.",
   },
   {
     id: "cifar-100",
@@ -93,6 +93,12 @@ export const REGISTRY: Benchmark[] = [
         authority: "community-standard",
         note: "Robustness only.",
       },
+      {
+        name: "DeepOBS CIFAR-100 leaderboard",
+        url: "https://deepobs.github.io/",
+        authority: "community-standard",
+        note: "Optimizer-focused board; narrow scope.",
+      },
     ],
     notes: "No official leaderboard; same preprocessing caveats as CIFAR-10.",
   },
@@ -111,6 +117,12 @@ export const REGISTRY: Benchmark[] = [
     },
     alternatives: [
       {
+        name: "CodeSOTA — ImageNet-1K",
+        url: "https://www.codesota.com/benchmark/imagenet-1k",
+        authority: "community-standard",
+        note: "PwC-style SOTA table actively maintained since PwC's shutdown (current leader ~91% top-1, e.g. CoCa).",
+      },
+      {
         name: "timm (PyTorch Image Models) results",
         url: "https://github.com/huggingface/pytorch-image-models/blob/main/results/README.md",
         authority: "community-standard",
@@ -118,7 +130,7 @@ export const REGISTRY: Benchmark[] = [
       },
     ],
     notes:
-      "Watch the variant: plain ImageNet-1k val vs ImageNet-ReaL, ImageNet-V2, ImageNet-A/R measure different things. Top results often use extra pretraining data (e.g. JFT).",
+      "Watch the variant: plain ImageNet-1k val vs ImageNet-ReaL, ImageNet-V2, ImageNet-A/R measure different things. Top results often use extra pretraining data (e.g. JFT, ImageNet-21k).",
   },
   {
     id: "mnist",
@@ -133,7 +145,7 @@ export const REGISTRY: Benchmark[] = [
       authority: "archived",
       note: "PwC sunset 2025-07-25; static archive only.",
     },
-    notes: "Effectively solved (~99.8%+); of historical interest. Treat tiny differences as noise.",
+    notes: "Effectively solved (~0.1-0.2% error); of historical interest. Treat tiny differences as noise.",
   },
   {
     id: "coco",
@@ -146,7 +158,7 @@ export const REGISTRY: Benchmark[] = [
       name: "COCO Detection Leaderboard (official)",
       url: "https://cocodataset.org/#detection-leaderboard",
       authority: "official",
-      note: "Run by the COCO consortium with an official eval server.",
+      note: "Run by the COCO consortium; submissions via the CodaLab test-dev eval server (still active in 2026).",
     },
     alternatives: [
       {
@@ -171,7 +183,7 @@ export const REGISTRY: Benchmark[] = [
       name: "LMArena Leaderboard (official)",
       url: "https://lmarena.ai/leaderboard",
       authority: "official",
-      note: "Successor to LMSYS Chatbot Arena. Pairwise blind human-preference votes -> Elo.",
+      note: "Successor to LMSYS Chatbot Arena. Pairwise blind human-preference votes -> Elo, across ~9 categories (Text, Code, Vision, WebDev, ...).",
     },
     notes:
       "The single most-watched overall LLM ranking in 2026. Measures human preference, not capability per se — strong on style/helpfulness, weak as a proxy for hard reasoning.",
@@ -187,7 +199,7 @@ export const REGISTRY: Benchmark[] = [
       name: "Stanford CRFM HELM (official)",
       url: "https://crfm.stanford.edu/helm/",
       authority: "official",
-      note: "Multiple scenario-specific leaderboards (Lite, Classic, MMLU, etc.), updated in structured (≈quarterly) batches.",
+      note: "Multiple scenario-specific leaderboards (Lite, Classic, MMLU, MedHELM, Long-Context, ...). Entered maintenance mode on 2026-06-01; existing leaderboards remain accessible.",
     },
     notes: "Pick the specific HELM leaderboard that matches your scenario; there is no single HELM number.",
   },
@@ -202,8 +214,16 @@ export const REGISTRY: Benchmark[] = [
       name: "Hugging Face Open LLM Leaderboard",
       url: "https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard",
       authority: "community-standard",
-      note: "v1 was archived; verify you are on the current version. Open-weight models only (no closed APIs).",
+      note: "v1 archived; now on a contamination-hardened v2/v3 and still actively updated in 2026. Open-weight models only (no closed APIs).",
     },
+    alternatives: [
+      {
+        name: "OpenEvals — every-leaderboards (HF)",
+        url: "https://huggingface.co/spaces/OpenEvals/every-leaderboards",
+        authority: "community-standard",
+        note: "Unified view aggregating official HF benchmark leaderboards.",
+      },
+    ],
     notes: "Best for comparing open-weight models on automatic benchmarks. Does not include closed frontier APIs.",
   },
   {
@@ -220,8 +240,8 @@ export const REGISTRY: Benchmark[] = [
       note: "The repo hosts the dataset, not a live ranking. Labs self-report; aggregators differ on prompting/shots.",
     },
     alternatives: [
+      { name: "llm-stats.com — MMLU", url: "https://llm-stats.com/benchmarks/mmlu", authority: "community-standard", note: "Aggregates self-reported scores across closed + open models (live)." },
       { name: "Open LLM Leaderboard (MMLU-Pro)", url: "https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard", authority: "community-standard" },
-      { name: "llm-stats.com", url: "https://llm-stats.com/", authority: "community-standard", note: "Aggregates self-reported scores across closed + open models." },
     ],
     notes:
       "By 2026 MMLU is saturated ('hygiene minimum', top models ~90%+). Numbers swing with 0- vs 5-shot and prompt format, so cross-source comparisons are unreliable. Prefer MMLU-Pro / GPQA for differentiation.",
@@ -239,7 +259,7 @@ export const REGISTRY: Benchmark[] = [
       authority: "community-standard",
       note: "Maintained by the benchmark's authors; also a column on the Open LLM Leaderboard.",
     },
-    notes: "Harder, 10-choice version of MMLU; more discriminative in 2026 than vanilla MMLU.",
+    notes: "Harder, 10-choice version of MMLU; more discriminative in 2026 but also nearing saturation at the top (~89-90%).",
   },
   {
     id: "gpqa",
@@ -255,9 +275,10 @@ export const REGISTRY: Benchmark[] = [
       note: "No official live board; the Diamond subset is reported on vendor model cards and aggregators.",
     },
     alternatives: [
-      { name: "Epoch AI Benchmarking Hub", url: "https://epoch.ai/benchmarks", authority: "community-standard", note: "Independent, maintained cross-model tracking of GPQA/MATH/etc." },
+      { name: "Epoch AI — GPQA Diamond", url: "https://epoch.ai/benchmarks/gpqa-diamond", authority: "community-standard", note: "Independent, maintained cross-model tracking." },
+      { name: "llm-stats.com — GPQA", url: "https://llm-stats.com/benchmarks/gpqa", authority: "community-standard" },
     ],
-    notes: "A primary 2026 'hard reasoning' differentiator. Always check it is GPQA-Diamond and the shot/format.",
+    notes: "A primary 2026 'hard reasoning' differentiator, though now largely saturated (top models ~95%, well above the ~70% expert baseline). Always check it is GPQA-Diamond and the shot/format.",
   },
   {
     id: "gsm8k",
@@ -272,12 +293,15 @@ export const REGISTRY: Benchmark[] = [
       authority: "archived",
       note: "PwC sunset 2025-07-25; static archive only.",
     },
-    notes: "Saturated by 2026 (top models >95%). Use MATH / AIME for current math signal.",
+    alternatives: [
+      { name: "llm-stats.com — GSM8K", url: "https://llm-stats.com/benchmarks/gsm8k", authority: "community-standard", note: "Live current rankings (the PwC table is a historical snapshot)." },
+    ],
+    notes: "Saturated by 2026 (top models >99%). Use MATH / AIME for current math signal.",
   },
   {
     id: "math",
     name: "MATH",
-    aliases: ["hendrycks math", "competition math"],
+    aliases: ["hendrycks math", "competition math", "math-500", "math 500"],
     task: "Competition mathematics",
     modality: "language",
     metric: "Accuracy (%)",
@@ -288,14 +312,15 @@ export const REGISTRY: Benchmark[] = [
       note: "Dataset repo, not a live board. Tracked via aggregators below.",
     },
     alternatives: [
+      { name: "llm-stats.com — MATH-500", url: "https://llm-stats.com/benchmarks/math-500", authority: "community-standard", note: "MATH-500 (a 500-problem subset) is the commonly tracked variant in 2026." },
       { name: "Epoch AI Benchmarking Hub", url: "https://epoch.ai/benchmarks", authority: "community-standard" },
     ],
-    notes: "Largely saturated; the harder MATH-500 split and AIME are more discriminative in 2026.",
+    notes: "Largely saturated (top models >99% on MATH-500); the harder MATH-500 split and AIME are the discriminative variants in 2026.",
   },
   {
     id: "aime",
-    name: "AIME (2024/2025)",
-    aliases: ["aime 2025", "aime 2024", "american invitational mathematics examination"],
+    name: "AIME (2026 / 2025)",
+    aliases: ["aime 2026", "aime 2025", "aime 2024", "american invitational mathematics examination"],
     task: "Olympiad-style math",
     modality: "language",
     metric: "Accuracy (%) / problems solved",
@@ -305,7 +330,8 @@ export const REGISTRY: Benchmark[] = [
       authority: "community-standard",
       note: "Independent, maintained tracking of frontier models on AIME and other olympiads with contamination controls.",
     },
-    notes: "A primary 2026 reasoning signal. Specify the year (e.g. AIME 2025) — older years risk training-set contamination.",
+    notes:
+      "AIME 2025 is now saturated (top models 98%+); AIME 2026 is the primary competition-math signal on MathArena, with 'MathArena Apex' as a harder aggregate. Specify the year — older years risk training-set contamination.",
   },
   {
     id: "humaneval",
@@ -328,7 +354,7 @@ export const REGISTRY: Benchmark[] = [
   {
     id: "swe-bench",
     name: "SWE-bench (Verified)",
-    aliases: ["swebench", "swe bench", "swe-bench verified"],
+    aliases: ["swebench", "swe bench", "swe-bench verified", "swe-bench pro"],
     task: "Real-world software issue resolution",
     modality: "code",
     metric: "% Resolved",
@@ -336,10 +362,10 @@ export const REGISTRY: Benchmark[] = [
       name: "SWE-bench Leaderboard (official)",
       url: "https://www.swebench.com/",
       authority: "official",
-      note: "Official board with Verified / Full / Lite / Multimodal splits.",
+      note: "Official board with Verified / Full / Lite / Multimodal splits. A harder 'SWE-bench Pro' (Scale) also exists.",
     },
     notes:
-      "The primary 2026 agentic-coding benchmark. Compare on the SAME split (Verified is the standard) and note whether a scaffold/agent is used.",
+      "The primary 2026 agentic-coding benchmark (top models ~95% on Verified). Compare on the SAME split (Verified is the standard) and note whether a scaffold/agent is used.",
   },
   {
     id: "hle",
@@ -349,12 +375,12 @@ export const REGISTRY: Benchmark[] = [
     modality: "language",
     metric: "Accuracy (%)",
     canonical: {
-      name: "Humanity's Last Exam (official)",
-      url: "https://lastexam.ai/",
+      name: "Humanity's Last Exam Leaderboard (Scale Labs, official)",
+      url: "https://labs.scale.com/leaderboard/humanitys_last_exam",
       authority: "official",
-      note: "Maintained by CAIS + Scale AI; a frontier-difficulty board.",
+      note: "Live official leaderboard hosted by Scale AI (project site: lastexam.ai). Maintained by CAIS + Scale AI; 2,500 questions.",
     },
-    notes: "A 2026 frontier signal: top models still score low, so it discriminates well at the top end.",
+    notes: "A 2026 frontier signal: top models still score low (~40-45% without heavy scaffolding), so it discriminates well at the top end.",
   },
 
   // ---- Embedding / NLP ----
@@ -369,7 +395,7 @@ export const REGISTRY: Benchmark[] = [
       name: "MTEB Leaderboard (official)",
       url: "https://huggingface.co/spaces/mteb/leaderboard",
       authority: "official",
-      note: "Maintained by the MTEB authors on Hugging Face.",
+      note: "Maintained by the MTEB authors on Hugging Face (5,000+ submissions). Use the MTEB v2 / MMTEB views for current models.",
     },
     notes: "The standard embedding-model board. Filter to the language/task family you care about; the global average can mislead.",
   },
@@ -384,7 +410,7 @@ export const REGISTRY: Benchmark[] = [
       name: "SuperGLUE Leaderboard (official)",
       url: "https://super.gluebenchmark.com/leaderboard",
       authority: "official",
-      note: "GLUE (https://gluebenchmark.com/leaderboard) is its predecessor; both are largely historical/saturated.",
+      note: "Still live in 2026 but historical: GLUE (https://gluebenchmark.com/leaderboard) is its predecessor; frontier labs no longer submit (both are saturated).",
     },
     notes: "Of historical importance; superseded by harder LLM benchmarks for frontier comparison.",
   },
@@ -399,7 +425,7 @@ export const REGISTRY: Benchmark[] = [
       name: "SQuAD2.0 Explorer (official)",
       url: "https://rajpurkar.github.io/SQuAD-explorer/",
       authority: "official",
-      note: "Official Stanford board; new submissions are effectively closed.",
+      note: "Official Stanford board; effectively dormant — new frontier submissions are rare.",
     },
     notes: "Historical; useful as a classic reading-comprehension reference, not a frontier signal.",
   },
@@ -416,9 +442,9 @@ export const REGISTRY: Benchmark[] = [
       name: "MMMU Leaderboard (official)",
       url: "https://mmmu-benchmark.github.io/#leaderboard",
       authority: "official",
-      note: "Maintained by the MMMU authors.",
+      note: "Maintained by the MMMU authors. A harder MMMU-Pro variant is the more discriminative 2026 board.",
     },
-    notes: "The standard 2026 board for multimodal (image+text) reasoning. Note Val vs Test split.",
+    notes: "The standard 2026 board for multimodal (image+text) reasoning, nearing saturation (~86% on MMMU, near the ~89% human-expert mark). Note Val vs Test split.",
   },
   {
     id: "gaia",
@@ -433,7 +459,7 @@ export const REGISTRY: Benchmark[] = [
       authority: "official",
       note: "Maintained on Hugging Face by the GAIA authors.",
     },
-    notes: "A standard board for tool-using assistant agents. Levels 1-3 differ greatly in difficulty.",
+    notes: "A standard board for tool-using assistant agents. Levels 1-3 differ greatly in difficulty, and the agent scaffold can swing scores by ~30 points — compare like-for-like.",
   },
 ];
 
