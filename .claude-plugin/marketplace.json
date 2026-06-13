@@ -13,6 +13,11 @@
       "name": "shell-runner",
       "source": "./plugin/shell-runner",
       "description": "A /run slash command that executes a shell command verbatim via the Bash tool — a fast command shortcut that works on desktop, mobile, and web."
+    },
+    {
+      "name": "night-run",
+      "source": "./plugin/night-run",
+      "description": "Set up an overnight autonomous run before you sleep: it interviews you, confirms, then works on its own (improve -> try -> record -> commit) without asking, until your stop time or a wake signal. In-session, not a routine."
     }
   ]
 }
