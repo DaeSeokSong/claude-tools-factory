@@ -1,0 +1,9 @@
+{
+  "name": "shell-runner",
+  "description": "A /run slash command that executes a shell command verbatim via the Bash tool and shows its output — a fast command shortcut that works on every Claude Code interface (desktop, mobile, web), since it routes through Claude rather than a native terminal.",
+  "version": "0.1.0",
+  "author": {
+    "name": "DaeSeokSong"
+  },
+  "keywords": ["shell", "terminal", "command", "run", "bash"]
+}

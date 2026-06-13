@@ -8,6 +8,11 @@
       "name": "experience-guard",
       "source": "./plugin/experience-guard",
       "description": "Research prior experience before any non-trivial task and record outcomes after, so the agent stops repeating known failures. Pairs with the experience-ledger MCP server."
+    },
+    {
+      "name": "shell-runner",
+      "source": "./plugin/shell-runner",
+      "description": "A /run slash command that executes a shell command verbatim via the Bash tool — a fast command shortcut that works on desktop, mobile, and web."
     }
   ]
 }
