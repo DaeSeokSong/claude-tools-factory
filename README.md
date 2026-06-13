@@ -1,0 +1,32 @@
+# claude-tools-factory
+
+A factory for building, versioning, and publicly distributing **everything that helps an agent** — Claude Code plugins (skills, subagents, hooks, slash commands), standalone MCP servers, and agent harnesses. Auxiliary pieces like memory conventions and eval infrastructure attach to whichever leaf needs them.
+
+## Why this layout
+
+"Things that help agents" split into a few distribution tracks. The monorepo is the *development* unit; every distributable *leaf* stays self-contained.
+
+| Track | Folder | Distribution mechanism | Consumed by |
+| --- | --- | --- | --- |
+| **Plugins** | `plugin/` | Claude Code **marketplace** — `/.claude-plugin/marketplace.json` lists each plugin | Claude Code (`/plugin install <name>@claude-tools-factory`) |
+| **MCP servers** | `mcp/` | **Package registry** — each server is its own npm / pip / docker / remote package | Any MCP client (Claude Code, Cursor, …) |
+| **Harnesses** | `harness/` | Standalone app/framework — its own package or repo | Run directly |
+
+A plugin *bundles* components (skills, agents, hooks, an `.mcp.json`, …) and ships through one marketplace catalog. An MCP server is a *standalone* package with the widest reach (works in any MCP client). A harness is the *host* that runs all of the above, so it sits a layer below and ships on its own.
+
+## The one monorepo rule
+
+Each distributed leaf must be **self-contained**. Installed plugins are copied to a cache, so a plugin cannot reference files outside its own directory (`../shared-utils` breaks). Share code via a published package or a symlink — never a bare relative path that escapes the leaf. The same applies to MCP servers and harnesses: a consumer installs just that one leaf.
+
+## Layout
+
+```
+.
+├── .claude-plugin/
+│   └── marketplace.json   # catalog of every plugin under plugin/
+├── plugin/                # Claude Code plugins (one folder per plugin)
+├── mcp/                   # standalone MCP servers (one folder per server)
+└── harness/               # standalone agent harnesses (one folder per harness)
+```
+
+The folder tree is expected to evolve. See each track's README for how to add a new entry.
