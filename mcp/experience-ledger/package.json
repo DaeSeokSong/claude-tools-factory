@@ -1,6 +1,6 @@
 {
   "name": "experience-ledger-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server that logs agent action attempts (5W1H + root cause + result) and recalls prior outcomes before acting, so the same failures/successes are not blindly repeated.",
   "type": "module",
   "bin": {

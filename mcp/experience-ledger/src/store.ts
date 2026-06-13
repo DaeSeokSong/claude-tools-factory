@@ -5,9 +5,10 @@ import { dirname, join } from "node:path";
 
 export type Outcome = "success" | "failure" | "partial";
 
-/** One recorded attempt: the 5W1H plus root cause, detailed result, and a resolution. */
+/** One recorded attempt: a one-line title, the 5W1H, root cause, result, and a resolution. */
 export interface ExperienceRecord {
   id: string;
+  title: string; //      one-line summary (for dated digests / RAG headlines)
   who: string; //        WHO  acted (model / agent / user)
   what: string; //       WHAT was attempted (the matching key)
   when: string; //       WHEN (ISO timestamp)
@@ -28,6 +29,11 @@ export interface Match {
   score: number;
 }
 
+export interface Ranked {
+  record: ExperienceRecord;
+  score: number;
+}
+
 /** Where the ledger lives. Override with EXPERIENCE_LEDGER_PATH (e.g. a repo-local file). */
 export function ledgerPath(): string {
   return process.env.EXPERIENCE_LEDGER_PATH || join(homedir(), ".experience-ledger", "ledger.jsonl");
@@ -42,6 +48,11 @@ export function fingerprint(what: string): string {
 
 export function newId(): string {
   return randomUUID();
+}
+
+/** Calendar day (YYYY-MM-DD) of a record, for dated digests. */
+export function dayOf(r: ExperienceRecord): string {
+  return r.when.slice(0, 10);
 }
 
 export function loadAll(): ExperienceRecord[] {
@@ -93,4 +104,23 @@ export function findMatches(what: string, all: ExperienceRecord[], threshold = 0
     if (s >= threshold) matches.push({ record: r, kind: "similar", score: s });
   }
   return matches.sort((a, b) => b.score - a.score || b.record.when.localeCompare(a.record.when));
+}
+
+/** Relevance of a free-text query to a whole record (title/what/why/result/cause/resolution/tags). */
+export function relevance(query: string, r: ExperienceRecord): number {
+  const hay = [r.title, r.what, r.why, r.result, r.rootCause, r.resolution, r.tags.join(" ")].join(" ");
+  return similarity(query, hay);
+}
+
+/** Lexical "RAG" retrieval: records most relevant to a query, best first. */
+export function rankByRelevance(query: string, all: ExperienceRecord[], min = 0.15): Ranked[] {
+  return all
+    .map((r) => ({ record: r, score: relevance(query, r) }))
+    .filter((x) => x.score >= min)
+    .sort((a, b) => b.score - a.score || b.record.when.localeCompare(a.record.when));
+}
+
+/** Chronological chain of every attempt sharing a fingerprint — the causal "DAG" over one action. */
+export function chainFor(fp: string, all: ExperienceRecord[]): ExperienceRecord[] {
+  return all.filter((r) => r.fingerprint === fp).sort((a, b) => a.when.localeCompare(b.when));
 }

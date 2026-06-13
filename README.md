@@ -2,6 +2,12 @@
 
 A factory for building, versioning, and publicly distributing **everything that helps an agent** — Claude Code plugins (skills, subagents, hooks, slash commands), standalone MCP servers, and agent harnesses. Auxiliary pieces like memory conventions and eval infrastructure attach to whichever leaf needs them.
 
+## First principles
+
+1. **Simplify** — reduce each thing to its essence before building it.
+2. **Subdivide** — break it into small, independent, single-purpose pieces.
+3. **Automate** — once a piece is simple and well-scoped, make it run itself.
+
 ## Why this layout
 
 "Things that help agents" split into a few distribution tracks. The monorepo is the *development* unit; every distributable *leaf* stays self-contained.
