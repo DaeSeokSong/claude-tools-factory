@@ -209,7 +209,7 @@ server.registerTool(
       fingerprint: fingerprint(a.what),
     };
     append(rec);
-    const lines = [`Recorded ${ICON[rec.outcome]} ${rec.outcome} — \"${rec.title}\" (id ${rec.id}, ledger: ${ledgerPath()}).`];
+    const lines = [`Recorded ${ICON[rec.outcome]} ${rec.outcome} — "${rec.title}" (id ${rec.id}, ledger: ${ledgerPath()}).`];
     if (priors.length) {
       lines.push("", `⚠️ ${priors.length} earlier attempt(s) on a similar action already existed:`, renderMatches(priors));
     }
@@ -291,7 +291,7 @@ server.registerTool(
     if (repeated.length) {
       lines.push("", "Most-repeated actions (repetition hotspots):");
       for (const e of repeated) {
-        lines.push(`  • ${e.count}× \"${e.title}\" — ✅${e.outcomes.success} ❌${e.outcomes.failure} 🟡${e.outcomes.partial}`);
+        lines.push(`  • ${e.count}× "${e.title}" — ✅${e.outcomes.success} ❌${e.outcomes.failure} 🟡${e.outcomes.partial}`);
       }
     }
     return { content: [{ type: "text", text: lines.join("\n") }] };
