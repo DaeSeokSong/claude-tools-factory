@@ -18,6 +18,9 @@ const AUTHORITY_LABEL: Record<Authority, string> = {
   fragmented: "⚠️ fragmented (no single trustworthy source; results are scattered)",
 };
 
+// Authorities that correspond to a maintained, live leaderboard you can actually read now.
+const LIVE_AUTH: Authority[] = ["official", "community-standard"];
+
 function renderLeaderboard(l: Leaderboard, bullet = false): string {
   const head = `${bullet ? "• " : ""}${l.name}`;
   const lines = [head, `   authority: ${AUTHORITY_LABEL[l.authority]}`, `   url: ${l.url}`];
@@ -42,10 +45,17 @@ function renderBenchmark(b: Benchmark): string {
     out.push(`⚠️ Notes: ${b.notes}`);
   }
   out.push("");
-  out.push(
-    "To read CURRENT standings, fetch the canonical URL above with your web tool — " +
-      "this server vouches for WHICH source is authoritative, not for live numbers.",
-  );
+  if (LIVE_AUTH.includes(b.canonical.authority)) {
+    out.push(
+      "To read CURRENT standings, fetch the canonical URL above with your web tool — " +
+        "this server vouches for WHICH source is authoritative, not for live numbers.",
+    );
+  } else {
+    out.push(
+      "⚠️ No single LIVE/official board exists — the canonical link is a historical/archived reference. " +
+        "Use the alternatives above (mind their caveats) or recent papers for current numbers.",
+    );
+  }
   return out.join("\n");
 }
 
@@ -91,7 +101,8 @@ server.registerTool(
     title: "Get the canonical leaderboard pointer to read current standings",
     description:
       "Like find_leaderboard but concise: returns just the single canonical source (name, authority, URL, metric) for a " +
-      "benchmark, so an agent can then fetch that URL for current rankings. Use when you just want 'where are the live standings'.",
+      "benchmark, so an agent can then fetch that URL for current rankings. For benchmarks with no live/official board " +
+      "(archived or fragmented), it says so explicitly instead of pointing at a dead URL.",
     inputSchema: {
       dataset: z.string().describe("Benchmark/dataset name."),
     },
@@ -99,6 +110,12 @@ server.registerTool(
   async ({ dataset }) => {
     const b = findBenchmark(dataset);
     if (!b) return { content: [{ type: "text", text: notFound(dataset) }] };
+    // When the canonical source is archived/fragmented there is no clean live board to
+    // point at, so fall back to the full breakdown (which states "no official board" and
+    // lists alternatives) instead of misdirecting to a dead URL.
+    if (!LIVE_AUTH.includes(b.canonical.authority)) {
+      return { content: [{ type: "text", text: renderBenchmark(b) }] };
+    }
     const text = [
       `${b.name} — ${b.task} (${b.modality}); metric: ${b.metric}`,
       "",
