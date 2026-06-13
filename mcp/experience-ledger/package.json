@@ -1,0 +1,38 @@
+{
+  "name": "experience-ledger-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that logs agent action attempts (5W1H + root cause + result) and recalls prior outcomes before acting, so the same failures/successes are not blindly repeated.",
+  "type": "module",
+  "bin": {
+    "experience-ledger-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "agent-memory",
+    "ledger",
+    "lessons-learned",
+    "postmortem"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
