@@ -116,10 +116,13 @@ server.registerTool(
       if (success) {
         reuse.push(`✅ ${label}\n   known-good: ${success.how || success.resolution || success.result || "(see id " + success.id + ")"}`);
       } else {
-        const lastFail = [...chain].reverse().find((r) => r.outcome === "failure");
-        if (!lastFail) continue;
-        const block = `❌ ${label}\n   cause: ${lastFail.rootCause || "—"}\n   ${lastFail.resolution ? "fix: " + lastFail.resolution : "no resolution recorded — investigate + cross-verify"}`;
-        (lastFail.resolution ? avoid : open).push(block);
+        const fails = chain.filter((r) => r.outcome === "failure");
+        if (!fails.length) continue;
+        // Prefer the most recent failure that recorded a resolution, so a known fix is
+        // not lost when a later attempt fails again without restating it.
+        const ref = [...fails].reverse().find((r) => r.resolution) ?? fails[fails.length - 1];
+        const block = `❌ ${label}\n   cause: ${ref.rootCause || "—"}\n   ${ref.resolution ? "fix: " + ref.resolution : "no resolution recorded — investigate + cross-verify"}`;
+        (ref.resolution ? avoid : open).push(block);
       }
     }
     const out: string[] = [
