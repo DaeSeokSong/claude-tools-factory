@@ -1,7 +1,7 @@
 {
   "name": "night-run",
-  "description": "Set up an overnight autonomous run before you sleep: it interviews you, confirms its understanding, then works on its own (improve -> try -> record -> commit) without asking, until your stop time or a wake/stop signal. Runs in the current session, not a scheduled routine. Pairs with the experience-ledger MCP and git push.",
-  "version": "0.1.0",
+  "description": "Set up an overnight autonomous run before you sleep: it interviews you, confirms, then works on its own (improve -> try -> record -> commit) without asking, in one of two stop modes — (A) run until a set time, or (B) run until you say stop. In-session, not a scheduled routine. Pairs with the experience-ledger MCP and git push.",
+  "version": "0.2.0",
   "author": {
     "name": "DaeSeokSong"
   },
