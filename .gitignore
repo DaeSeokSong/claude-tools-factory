@@ -39,3 +39,7 @@ Thumbs.db
 
 # Claude Code local overrides
 .claude/settings.local.json
+
+# Scratch / temporary experiments — run in-repo, never committed; delete freely
+.scratch/
+.evolve/

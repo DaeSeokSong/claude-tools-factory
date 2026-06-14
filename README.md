@@ -36,3 +36,7 @@ Each distributed leaf must be **self-contained**. Installed plugins are copied t
 ```
 
 The folder tree is expected to evolve. See each track's README for how to add a new entry.
+
+## Scratch space
+
+Experiment in-repo without polluting the factory. `.scratch/` and `.evolve/` are gitignored, so throwaway tests, scratch builds, and harness archive output (e.g. `evolve({ archiveDir: ".evolve" })`) land there and never get committed — just delete the directory when you're done. For a fully isolated run, work under `/tmp` instead. Either way the committed leaves stay clean.
