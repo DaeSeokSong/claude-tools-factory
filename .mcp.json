@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "experience-ledger": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/mcp/experience-ledger/dist/index.js"]
+    }
+  }
+}

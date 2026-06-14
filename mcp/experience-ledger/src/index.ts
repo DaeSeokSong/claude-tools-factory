@@ -4,18 +4,24 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import {
   append,
+  appendVector,
   chainFor,
   dayOf,
   findMatches,
   fingerprint,
   ledgerPath,
   loadAll,
+  loadVectors,
   newId,
-  rankByRelevance,
+  rankHybrid,
+  recordText,
+  vectorNeighbors,
+  vectorPath,
   type ExperienceRecord,
   type Match,
   type Outcome,
 } from "./store.js";
+import { embedderFromEnv } from "./embed.js";
 
 const ICON: Record<Outcome, string> = { success: "✅", failure: "❌", partial: "🟡" };
 
@@ -63,7 +69,9 @@ function renderMatches(matches: Match[]): string {
   return out.join("\n").trim();
 }
 
-const server = new McpServer({ name: "experience-ledger", version: "0.2.0" });
+const embedder = embedderFromEnv();
+
+const server = new McpServer({ name: "experience-ledger", version: "0.3.0" });
 
 server.registerTool(
   "research_task",
@@ -92,7 +100,16 @@ server.registerTool(
         ],
       };
     }
-    const ranked = rankByRelevance(task, all).slice(0, limit ?? 8);
+    const vectors = embedder ? loadVectors() : new Map<string, number[]>();
+    let queryVec: number[] | null = null;
+    if (embedder && vectors.size) {
+      try {
+        [queryVec] = await embedder.embed([task]);
+      } catch (e) {
+        console.error("query embedding failed; using lexical retrieval only:", e);
+      }
+    }
+    const ranked = rankHybrid(task, all, queryVec, vectors, limit ?? 8);
     if (!ranked.length) {
       return {
         content: [
@@ -154,7 +171,21 @@ server.registerTool(
     },
   },
   async ({ what }) => {
-    const matches = findMatches(what, loadAll());
+    const all = loadAll();
+    let matches = findMatches(what, all);
+    if (embedder) {
+      const vectors = loadVectors();
+      if (vectors.size) {
+        try {
+          const [qv] = await embedder.embed([what]);
+          const seen = new Set(matches.map((m) => m.record.id));
+          for (const m of vectorNeighbors(qv, all, vectors)) if (!seen.has(m.record.id)) matches.push(m);
+          matches = matches.sort((a, b) => b.score - a.score || b.record.when.localeCompare(a.record.when));
+        } catch (e) {
+          console.error("recall embedding failed; using lexical matches only:", e);
+        }
+      }
+    }
     if (!matches.length) {
       return {
         content: [
@@ -212,6 +243,14 @@ server.registerTool(
       fingerprint: fingerprint(a.what),
     };
     append(rec);
+    if (embedder) {
+      try {
+        const [e] = await embedder.embed([recordText(rec)]);
+        appendVector(rec.id, e);
+      } catch (err) {
+        console.error("embedding failed (record saved without a vector):", err);
+      }
+    }
     const lines = [`Recorded ${ICON[rec.outcome]} ${rec.outcome} — "${rec.title}" (id ${rec.id}, ledger: ${ledgerPath()}).`];
     if (priors.length) {
       lines.push("", `⚠️ ${priors.length} earlier attempt(s) on a similar action already existed:`, renderMatches(priors));
@@ -278,10 +317,17 @@ server.registerTool(
       const d = dayOf(r);
       byDay.set(d, [...(byDay.get(d) ?? []), r]);
     }
+    const vectors = loadVectors();
     const lines = [
       `Ledger: ${ledgerPath()}`,
       `Total: ${all.length} · ✅ ${byOutcome.success}  ❌ ${byOutcome.failure}  🟡 ${byOutcome.partial}`,
     ];
+    if (embedder || vectors.size) {
+      lines.push(
+        `Embeddings: ${vectors.size}/${all.length} cached` +
+          (embedder ? ` · provider ${embedder.id}` : " · no provider set (set EXPERIENCE_LEDGER_EMBED, then run embed_backfill)"),
+      );
+    }
     const days = [...byDay.keys()].sort((a, b) => b.localeCompare(a)).slice(0, 7);
     lines.push("", "Recent days (one-line titles):");
     for (const d of days) {
@@ -301,9 +347,67 @@ server.registerTool(
   },
 );
 
+server.registerTool(
+  "embed_backfill",
+  {
+    title: "Backfill vector embeddings for the ledger (enables semantic retrieval)",
+    description:
+      "Compute and cache embeddings for any records that lack one, so research_task / recall_experience can use " +
+      "semantic (vector) retrieval in addition to lexical. Requires an embedding provider: set " +
+      "EXPERIENCE_LEDGER_EMBED=voyage|openai|hash (and the matching API key) first. Vectors are written to a sidecar " +
+      "cache next to the ledger; safe to re-run (only missing records are embedded).",
+    inputSchema: {},
+  },
+  async () => {
+    if (!embedder) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "No embedding provider configured. Set EXPERIENCE_LEDGER_EMBED=voyage|openai|hash (and the API key), then re-run embed_backfill.",
+          },
+        ],
+      };
+    }
+    const all = loadAll();
+    const have = loadVectors();
+    const todo = all.filter((r) => !have.has(r.id));
+    if (!todo.length) {
+      return { content: [{ type: "text", text: `All ${all.length} record(s) already embedded (${embedder.id}, ${vectorPath()}).` }] };
+    }
+    let ok = 0;
+    let failed = 0;
+    const batchSize = 64;
+    for (let i = 0; i < todo.length; i += batchSize) {
+      const batch = todo.slice(i, i + batchSize);
+      try {
+        const vecs = await embedder.embed(batch.map(recordText));
+        batch.forEach((r, j) => {
+          appendVector(r.id, vecs[j]);
+          ok++;
+        });
+      } catch (e) {
+        failed += batch.length;
+        console.error("embed_backfill batch failed:", e);
+      }
+    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Embedded ${ok}/${todo.length} record(s) with ${embedder.id} → ${vectorPath()}${failed ? ` (${failed} failed — see server logs)` : ""}.`,
+        },
+      ],
+    };
+  },
+);
+
 async function main(): Promise<void> {
   await server.connect(new StdioServerTransport());
-  console.error(`experience-ledger MCP server running on stdio (ledger: ${ledgerPath()})`);
+  console.error(
+    `experience-ledger MCP server running on stdio (ledger: ${ledgerPath()}; ` +
+      `retrieval: ${embedder ? "hybrid lexical+vector via " + embedder.id : "lexical"})`,
+  );
 }
 
 main().catch((err) => {

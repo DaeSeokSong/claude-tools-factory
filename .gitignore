@@ -43,3 +43,6 @@ Thumbs.db
 # Scratch / temporary experiments — run in-repo, never committed; delete freely
 .scratch/
 .evolve/
+
+# Vector embedding sidecar caches (regenerable via the experience-ledger embed_backfill tool)
+*.vec.jsonl
