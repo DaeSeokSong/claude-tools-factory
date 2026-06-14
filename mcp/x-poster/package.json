@@ -1,0 +1,39 @@
+{
+  "name": "x-poster-mcp",
+  "version": "0.1.0",
+  "description": "MCP server to post to X (Twitter) easily and reach-aware: preview, auto-split long text into a numbered reply thread, optionally route a post into an X Community (community_id), lint hashtags, and publish only on explicit confirmation. Token from env; nothing is posted without confirm.",
+  "type": "module",
+  "bin": {
+    "x-poster-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "twitter",
+    "x",
+    "posting",
+    "thread",
+    "community"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
