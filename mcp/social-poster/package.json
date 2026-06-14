@@ -1,0 +1,39 @@
+{
+  "name": "social-poster-mcp",
+  "version": "0.1.0",
+  "description": "MCP server to post text to X (Twitter) and Threads easily: preview + validate, auto-split long text into a numbered thread, cross-post to both, and publish only on explicit confirmation. Tokens come from env; nothing is posted without confirm + credentials.",
+  "type": "module",
+  "bin": {
+    "social-poster-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "twitter",
+    "x",
+    "threads",
+    "social",
+    "posting"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
