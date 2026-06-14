@@ -46,3 +46,6 @@ Thumbs.db
 
 # Vector embedding sidecar caches (regenerable via the experience-ledger embed_backfill tool)
 *.vec.jsonl
+
+# docs-rag index cache (regenerable via the docs-rag ingest_docs tool)
+.docs-rag/
