@@ -1,0 +1,27 @@
+{
+  "name": "self-evolving-harness-starter",
+  "version": "0.1.0",
+  "description": "A minimal, honest self-evolving harness: a Darwin-Godel-Machine-style loop (propose a scaffolding variant -> evaluate -> accept only if it beats the champion on a HELD-OUT eval -> version + record -> repeat) with a reward-hack guard. Bring a task and an eval; it evolves the scaffolding. Lowers the entry barrier to harness engineering.",
+  "type": "module",
+  "bin": {
+    "self-evolving-harness-demo": "dist/demo.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "demo": "node dist/demo.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["harness", "self-evolving", "self-improving", "darwin-godel", "agent", "eval", "evolution"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
