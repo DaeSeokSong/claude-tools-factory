@@ -2,7 +2,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { splitThread, lintHashtags } from "./segment.js";
+import { splitThread, lintHashtags, xWeight } from "./segment.js";
 import { X_CHAR_LIMIT, buildXPublisher, isXConfigured } from "./x.js";
 
 const REACH_TIPS =
@@ -15,12 +15,12 @@ function renderPlan(text: string, number: boolean, communityId?: string): string
   const lint = lintHashtags(text);
   const head = segments.length > 1 ? `thread of ${segments.length}` : "single post";
   const lines = [`X (Twitter) — ${head}${communityId ? ` → Community ${communityId}` : ""}`];
-  segments.forEach((s, i) => lines.push(`  [${i + 1}/${segments.length}] (${s.length}/${X_CHAR_LIMIT}) ${s}`));
+  segments.forEach((s, i) => lines.push(`  [${i + 1}/${segments.length}] (${xWeight(s)}/${X_CHAR_LIMIT}) ${s}`));
   lines.push("", `Hashtags: ${lint.note}${lint.warn ? "  ⚠️" : ""}`);
   return lines.join("\n");
 }
 
-const server = new McpServer({ name: "x-poster", version: "0.1.0" });
+const server = new McpServer({ name: "x-poster", version: "0.1.1" });
 
 server.registerTool(
   "x_status",

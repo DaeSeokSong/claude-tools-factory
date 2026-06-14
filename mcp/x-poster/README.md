@@ -20,7 +20,7 @@ Posting is **public and irreversible**:
 | `preview_x_post(text, communityId?, number?)` | **no** | Dry-run: the numbered thread, char counts, target community, and a hashtag-reach lint. |
 | `publish_x_post(text, communityId?, number?, confirm)` | yes | Posts for real — only with `confirm: true` and a token. Returns the URL(s). |
 
-- **Threading:** long text auto-splits on word boundaries into a numbered reply thread (`(1/3)`…), each replying to the previous, sized to X's **280** chars.
+- **Threading:** long text auto-splits on word boundaries into a numbered reply thread (`(1/3)`…), each replying to the previous, sized to X's **280 weighted chars** — CJK / Korean / Japanese / emoji count as **2**, exactly like X, so non-Latin posts split correctly.
 - **Community routing:** pass `communityId` to post the thread **root** into that X Community (`POST /2/tweets` `community_id`) — the one real way to target a topical audience within a single account.
 - **Hashtag lint:** flags 3+ hashtags (which *reduce* reach via X's spam filter in 2026) and nudges toward 0–2 niche tags.
 
