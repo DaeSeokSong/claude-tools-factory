@@ -34,6 +34,8 @@ Append-only **JSONL**, one record per line. Path resolution:
 
 Point `EXPERIENCE_LEDGER_PATH` at a file inside a repo (e.g. `./.experience-ledger.jsonl`) to keep a **project-scoped, version-controllable, team-shared** history. The format is human-readable and diff-friendly, and the log is immutable (every attempt is appended — repeated attempts are the signal, not noise). Corrupt lines are skipped rather than failing a read.
 
+**Dogfooded in this repo** — the factory keeps its own committed ledger at [`.experience-ledger.jsonl`](../../.experience-ledger.jsonl) (repo root), seeded with the real lessons from building it: the `git push` deadlock and its MCP-API fix, the tool-call over-escaping trap, the YAML colon-space frontmatter bug, the held-out-eval rule for self-evolution, and more. Point `EXPERIENCE_LEDGER_PATH` at it (or install the `experience-guard` plugin) and `research_task` / `recall_experience` have real prior experience to draw on from the first call.
+
 ## Install
 
 ```shell
