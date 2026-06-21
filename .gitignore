@@ -49,3 +49,6 @@ Thumbs.db
 
 # docs-rag index cache (regenerable via the docs-rag ingest_docs tool)
 .docs-rag/
+
+# Local test workbench (run `node scripts/workbench.mjs`; never committed)
+.workbench/

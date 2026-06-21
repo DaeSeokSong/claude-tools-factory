@@ -43,3 +43,5 @@ The folder tree is expected to evolve. See each track's README for how to add a 
 ## Scratch space
 
 Experiment in-repo without polluting the factory. `.scratch/` and `.evolve/` are gitignored, so throwaway tests, scratch builds, and harness archive output (e.g. `evolve({ archiveDir: ".evolve" })`) land there and never get committed — just delete the directory when you're done. For a fully isolated run, work under `/tmp` instead. Either way the committed leaves stay clean.
+
+A persistent local **test bench** lives in `.workbench/` (gitignored): run `node scripts/workbench.mjs` to build the social MCP servers and exercise their no-network preview/status tools **end-to-end as a real MCP client** (set tokens in your env to also try publishing). Drop a `.workbench/sample.txt` to test with your own message. The runner is committed (`scripts/`); its working dir isn't.
