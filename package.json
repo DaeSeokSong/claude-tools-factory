@@ -1,0 +1,9 @@
+{
+  "name": "claude-tools-factory",
+  "private": true,
+  "description": "Monorepo workspace root. Shared libraries live in packages/; distributable MCP servers in mcp/ bundle them at build time (esbuild) so each server still installs standalone.",
+  "workspaces": [
+    "packages/*",
+    "mcp/*"
+  ]
+}

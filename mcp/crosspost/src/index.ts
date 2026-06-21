@@ -9,8 +9,11 @@ import {
   xWeight,
   X_CHAR_LIMIT,
   LINKEDIN_CHAR_LIMIT,
-} from "./format.js";
-import { buildX, buildLinkedIn, isXConfigured, isLinkedInConfigured } from "./publish.js";
+  buildX,
+  buildLinkedIn,
+  isXConfigured,
+  isLinkedInConfigured,
+} from "social-core";
 
 type Platform = "x" | "linkedin";
 const ALL: Platform[] = ["x", "linkedin"];
@@ -37,7 +40,7 @@ function renderPlan(clean: string, platforms: Platform[], number: boolean, commu
   return out.join("\n").trim();
 }
 
-const server = new McpServer({ name: "crosspost", version: "0.1.0" });
+const server = new McpServer({ name: "crosspost", version: "0.2.0" });
 
 server.registerTool(
   "crosspost_status",

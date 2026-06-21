@@ -2,8 +2,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { splitThread, lintHashtags, xWeight } from "./segment.js";
-import { X_CHAR_LIMIT, buildXPublisher, isXConfigured } from "./x.js";
+import { planX, xWeight, X_CHAR_LIMIT, buildX, isXConfigured } from "social-core";
 
 const REACH_TIPS =
   "Reach tips: X ranks by first-~30-min engagement (replies count far more than likes), author authority, and recency — " +
@@ -11,16 +10,15 @@ const REACH_TIPS =
   "audience inside one account, post into an X Community via communityId.";
 
 function renderPlan(text: string, number: boolean, communityId?: string): string {
-  const segments = splitThread(text, X_CHAR_LIMIT, number);
-  const lint = lintHashtags(text);
-  const head = segments.length > 1 ? `thread of ${segments.length}` : "single post";
+  const p = planX(text, number);
+  const head = p.segments.length > 1 ? `thread of ${p.segments.length}` : "single post";
   const lines = [`X (Twitter) — ${head}${communityId ? ` → Community ${communityId}` : ""}`];
-  segments.forEach((s, i) => lines.push(`  [${i + 1}/${segments.length}] (${xWeight(s)}/${X_CHAR_LIMIT}) ${s}`));
-  lines.push("", `Hashtags: ${lint.note}${lint.warn ? "  ⚠️" : ""}`);
+  p.segments.forEach((s, i) => lines.push(`  [${i + 1}/${p.segments.length}] (${xWeight(s)}/${X_CHAR_LIMIT}) ${s}`));
+  lines.push("", `Hashtags: ${p.note}${p.hashtagWarn ? "  ⚠️" : ""}`);
   return lines.join("\n");
 }
 
-const server = new McpServer({ name: "x-poster", version: "0.1.1" });
+const server = new McpServer({ name: "x-poster", version: "0.2.0" });
 
 server.registerTool(
   "x_status",
@@ -34,7 +32,7 @@ server.registerTool(
   async () => {
     const lines = [
       `X poster: ${isXConfigured() ? "✅ configured (token present)" : "—  not configured"}`,
-      `Character limit: ${X_CHAR_LIMIT} (long text auto-splits into a numbered reply thread)`,
+      `Character limit: ${X_CHAR_LIMIT} weighted (long text auto-splits into a numbered reply thread)`,
       "Community routing: supported via communityId (posts the thread root into that X Community)",
       "Credentials (env): X_ACCESS_TOKEN — OAuth 2.0 user-context token with scope tweet.write.",
       "",
@@ -49,9 +47,9 @@ server.registerTool(
   {
     title: "Preview an X post/thread (no network, posts NOTHING)",
     description:
-      "Dry-run: show exactly what would be posted to X — the auto-split numbered thread (X's 280-char limit), each " +
-      "segment's char count, the target Community if any, and a hashtag-reach lint. Makes no network call and needs no " +
-      "token. Always preview before publish_x_post.",
+      "Dry-run: show exactly what would be posted to X — the auto-split numbered thread (X's 280-char weighted limit), " +
+      "each segment's char count, the target Community if any, and a hashtag-reach lint. Makes no network call and needs " +
+      "no token. Always preview before publish_x_post.",
     inputSchema: {
       text: z.string().describe("The post text. Long text auto-splits into a numbered reply thread."),
       communityId: z.string().optional().describe("Post the thread root into this X Community id (topical targeting)."),
@@ -95,21 +93,20 @@ server.registerTool(
         ],
       };
     }
-    const pub = buildXPublisher(process.env, undefined, communityId);
+    const pub = buildX(process.env, undefined, communityId);
     if (!pub) {
       return {
         content: [{ type: "text", text: "Not configured: set X_ACCESS_TOKEN (OAuth2 user token, scope tweet.write), then retry." }],
       };
     }
-    const segments = splitThread(text, X_CHAR_LIMIT, number ?? true);
-    const results = await pub.publish(segments);
+    const p = planX(text, number ?? true);
+    const results = await pub.publish(p.segments);
     const okCount = results.filter((r) => r.ok).length;
     const root = results.find((r) => r.ok && r.url)?.url;
-    const lint = lintHashtags(text);
     const out = [
-      `Published to X: ${okCount}/${segments.length} segment(s)${communityId ? ` → Community ${communityId}` : ""}.`,
+      `Published to X: ${okCount}/${p.segments.length} segment(s)${communityId ? ` → Community ${communityId}` : ""}.`,
       root ? `Thread root: ${root}` : "",
-      lint.warn ? `⚠️ ${lint.note}` : "",
+      p.hashtagWarn ? `⚠️ ${p.note}` : "",
       ...results.filter((r) => !r.ok).map((r) => `❌ segment ${r.segment}: ${r.error}`),
     ].filter(Boolean);
     return { content: [{ type: "text", text: out.join("\n") }] };

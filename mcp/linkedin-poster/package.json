@@ -1,10 +1,10 @@
 {
-  "name": "x-poster-mcp",
-  "version": "0.2.0",
-  "description": "MCP server to post to X (Twitter): preview, auto-split into a weighted 280-char numbered thread, optional community_id routing, hashtag lint; publish only on explicit confirmation. Shares social-core (bundled into dist at build).",
+  "name": "linkedin-poster-mcp",
+  "version": "0.1.0",
+  "description": "MCP server to post to LinkedIn: preview a single long-form post (<=3000 chars, see-more hint, hashtag advice) and publish only on explicit confirmation. Shares social-core (bundled into dist at build).",
   "type": "module",
   "bin": {
-    "x-poster-mcp": "dist/index.js"
+    "linkedin-poster-mcp": "dist/index.js"
   },
   "files": [
     "dist",
@@ -18,11 +18,9 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "twitter",
-    "x",
+    "linkedin",
     "posting",
-    "thread",
-    "community"
+    "social"
   ],
   "license": "MIT",
   "engines": {

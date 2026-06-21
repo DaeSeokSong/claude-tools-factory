@@ -1,0 +1,39 @@
+{
+  "name": "social-core",
+  "version": "0.1.0",
+  "description": "Shared core for the social MCP servers: Slack-markdown cleanup, X weighted thread splitting + publisher (with Community routing), and LinkedIn formatting + publisher. Consumed by mcp/x-poster, mcp/linkedin-poster, and mcp/crosspost (bundled into each at build).",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "x",
+    "twitter",
+    "linkedin",
+    "slack",
+    "social",
+    "thread",
+    "shared"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -24,12 +24,15 @@ A plugin *bundles* components (skills, agents, hooks, an `.mcp.json`, …) and s
 
 Each distributed leaf must be **self-contained**. Installed plugins are copied to a cache, so a plugin cannot reference files outside its own directory (`../shared-utils` breaks). Share code via a published package or a symlink — never a bare relative path that escapes the leaf. The same applies to MCP servers and harnesses: a consumer installs just that one leaf.
 
+Shared code therefore lives in **`packages/`** and is **bundled into each leaf at build** (e.g. the MCP servers esbuild-inline `social-core`), so a leaf reuses logic with no duplication yet still installs independently with nothing extra to publish.
+
 ## Layout
 
 ```
 .
 ├── .claude-plugin/
 │   └── marketplace.json   # catalog of every plugin under plugin/
+├── packages/              # shared libraries (e.g. social-core), bundled into leaves at build
 ├── plugin/                # Claude Code plugins (one folder per plugin)
 ├── mcp/                   # standalone MCP servers (one folder per server)
 └── harness/               # standalone agent harnesses (one folder per harness)
