@@ -10,7 +10,9 @@ export const LINKEDIN_CHAR_LIMIT = 3000;
 /**
  * Convert Slack message markup to clean plain text suitable for SNS:
  * unwraps bold / italic / strike / inline-code, turns <url|label> into "label (url)",
- * <#C123|chan> into #chan, drops <@U123> mentions, and decodes Slack HTML entities.
+ * <#C123|chan> into #chan, drops <@U123> mentions (including an orphaned "cc @user"
+ * label, whose target can't be reached off-Slack), decodes Slack HTML entities, and
+ * collapses the doubled spaces left behind by removed markup.
  */
 export function slackToText(s: string): string {
   return s
@@ -20,13 +22,15 @@ export function slackToText(s: string): string {
     .replace(/(^|[\s(])_([^_\n]+)_/g, "$1$2") // _italic_ (avoid snake_case mid-word)
     .replace(/~([^~\n]+)~/g, "$1") // ~strike~
     .replace(/<#[A-Z0-9]+\|([^>]+)>/g, "#$1") // channel link -> #name
-    .replace(/<@[A-Z0-9]+>/g, "") // user mention -> drop
+    .replace(/\bcc:?[ \t]*(?:<@[A-Z0-9]+>[ \t]*)+/gi, "") // "cc @mention(s)" -> drop label + targets (unreachable off-Slack)
+    .replace(/<@[A-Z0-9]+>/g, "") // remaining user mention -> drop
     .replace(/<!(?:here|channel|everyone)>/g, "") // broadcast mentions -> drop
     .replace(/<(https?:[^|>]+)\|([^>]+)>/g, "$2 ($1)") // <url|label> -> label (url)
     .replace(/<(https?:[^>]+)>/g, "$1") // <url> -> url
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
+    .replace(/[ \t]{2,}/g, " ") // collapse doubled spaces left by removed markup/mentions
     .replace(/[ \t]+\n/g, "\n") // trailing spaces
     .replace(/\n{3,}/g, "\n\n") // collapse big gaps
     .trim();
